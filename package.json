@@ -1,0 +1,33 @@
+{
+  "name": "ot-socialcalc",
+  "version": "1.0.0",
+  "description": "Operational Transformation for socialcalc commands (shareJS compatible)",
+  "main": "index.js",
+  "dependencies": {
+    "socialcalc": "2.x",
+    "spreadsheet-column": "1.x"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcelklehr/ot-socialcalc.git"
+  },
+  "keywords": [
+    "ot",
+    "operational",
+    "transformation",
+    "operational",
+    "transform",
+    "spreadsheet",
+    "grid",
+    "socialcalc"
+  ],
+  "author": "Marcel Klehr <mklehr@gmx.net>",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/marcelklehr/ot-socialcalc/issues"
+  },
+  "homepage": "https://github.com/marcelklehr/ot-socialcalc#readme"
+}
