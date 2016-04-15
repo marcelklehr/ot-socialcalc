@@ -27,8 +27,8 @@ Furthermore it allows you to convert a list of socialcalc commands into an opera
   - [x] deletecol/deleterow C5:E7
   - [ ] movepaste/moveinsert A1:B5 A8 all/formulas/format (if insert, destination must be in same rows or columns or else paste done)
   - [ ] sort cr1:cr2 col1 up/down col2 up/down col3 up/down
-  - [ ] name define|desc|delete
-
+  - [x] name define|desc|delete
+  - [x] transform cursor
 
 ## Tests.
 None yet. This is on the to-do!
