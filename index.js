@@ -2,7 +2,7 @@ var SocialCalc = require('socialcalc')
   , SpreadsheetColumn = require('spreadsheet-column')
   , column = new SpreadsheetColumn
 
-const operationsList = [Set, InsertRow, DeleteRow, InsertCol, DeleteCol]
+const operationsList = [Set, InsertRow, DeleteRow, InsertCol, DeleteCol, Name]
 const operationsHash = operationsList.reduce(function(obj, op) {obj[(new op).type] = op; return obj},{})
 const scInstance = new SocialCalc.SpreadsheetControl()
 
@@ -452,6 +452,69 @@ DeleteCol.parse = function(cmd) {
 DeleteCol.prototype.serialize = function() {
   if (!this.col) return ''
   return 'deletecol '+this.col
+}
+
+/**
+ * Name operation
+ */
+function Name(name, action, val) {
+  this.type = 'Name'
+  this.name = name
+  this.action = action
+  this.value = val
+}
+
+Name.hydrate = function(op) {
+  return new Name(op.name, op.action, op.value)
+}
+
+Name.prototype.serialize = function() {
+  if (!this.name) return ''
+  return 'name '+this.action+' '+this.name+' '+this.value
+}
+
+Name.parse = function(cmdstr) {
+  if(cmdstr.indexOf('name ') !== 0) return false
+  var cmd = cmdstr.substr('name '.length).split(' ')
+  return new Name(cmd[1], cmd[0], cmd[2])
+}
+
+Name.prototype.transformAgainst = function(op, left) {
+  if (op instanceof Name && op.name === this.name) {
+    // def, def => tie
+    // def, desc => -
+    // def, del => tie
+    // desc, def => -
+    // desc, desc => tie
+    // desc, del => tie
+    // del, def => tie
+    // del, desc => tie
+    // del, del => noop
+    if ('define' === this.action) {
+      if (op.action === 'define' || op.action === 'delete') { // def, def => tie; def, del => tie
+        if (left) return this
+	else return new Name(null, this.action, this.value)
+      }
+      else return this
+    }
+    else if ('desc' === this.action) {
+      if (op.action === 'desc' || op.action === 'delete') { // desc, desc => tie; desc, del => tie
+        if (left) return this
+	else return new Name(null, this.action, this.value)
+      }
+      else return this
+    }
+    else if ('delete' === this.action) {
+      if (op.action === 'delete') { // del, del => noop
+	return new Name(null, this.action, this.value)
+      }
+      else { // del, def => tie; del, desc => tie
+        if (left) return this
+	return new Name(null, this.action, this.value)
+      }
+    }
+  }
+  return this
 }
 
 /**
