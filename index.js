@@ -40,9 +40,17 @@ exports.transform = function(ops1, ops2, side) {
 }
 
 exports.transformCursor(cursor, ops/*, isOwnOp*/) { // isOwnOp is not supported for now, its purpose eludes me
-  var cursorOp = new Set(cursor, null, null)
-  unpackOps(ops).forEach((op) => cursorOp = cursorOp.transformAgainst(op))
-  return cursorOp.target
+  if (!~cursor.indexOf(':')) {
+    var cursorOp = new Set(cursor, null, null)
+    unpackOps(ops).forEach((op) => cursorOp = cursorOp.transformAgainst(op))
+    return cursorOp.target
+  }else{
+    // If the cursor contains a : it's a range, e.g. A1:C3
+    var range = cursor.split(':')
+      , rangeStartTransformed = exports.transformCursor(range[0], ops)
+      , rangeEndTransformed = exports.transformCursor(range[1], ops)
+    return rangeStartTransformed+':'+rangeEndTransformed
+  }
 }
 
 exports.compose = function(ops1, ops2) {
