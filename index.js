@@ -2,7 +2,7 @@ var SocialCalc = require('socialcalc')
   , SpreadsheetColumn = require('spreadsheet-column')
   , column = new SpreadsheetColumn
 
-const operationsList = [Set, InsertRow, DeleteRow, InsertCol, DeleteCol, Name]
+const operationsList = [Set, InsertRow, DeleteRow, InsertCol, DeleteCol, Name, Merge]
 const operationsHash = operationsList.reduce(function(obj, op) {obj[(new op).type] = op; return obj},{})
 const scInstance = new SocialCalc.SpreadsheetControl()
 
@@ -40,21 +40,15 @@ exports.transform = function(ops1, ops2, side) {
 }
 
 exports.transformCursor(cursor, ops/*, isOwnOp*/) { // isOwnOp is not supported for now, its purpose eludes me
+  var cursorOp
   if (!~cursor.indexOf(':')) {
-    var cursorOp = new Set(cursor, null, null)
+    cursorOp = new Set(cursor, null, null)
     unpackOps(ops).forEach((op) => cursorOp = cursorOp.transformAgainst(op))
-    return cursorOp.target
+    return cursorOp.hasEffect? cursorOp.target : null
   }else{
     // If the cursor contains a : it's a range, e.g. A1:C3
-    var range = cursor.split(':')
-      , rangeStartTransformed = exports.transformCursor(range[0], ops)
-      , rangeEndTransformed = exports.transformCursor(range[1], ops)
-    return rangeStartTransformed+':'+rangeEndTransformed
+    return transformRange(cursor, unpackOps(ops))
   }
-}
-
-exports.compose = function(ops1, ops2) {
-  return ops1.concat(ops2)
 }
 
 exports.deserializeEdit = function(cmds) {
@@ -463,6 +457,36 @@ DeleteCol.prototype.serialize = function() {
 }
 
 /**
+ * Merge operation
+ */
+function Merge(target) {
+  this.type = 'Merge'
+  this.target = target
+}
+
+Merge.hydrate = function(op) {
+  return new Merge(op.target)
+}
+
+Merge.prototype.serialize = function() {
+  if (!this.target) return ''
+  return 'merge '+this.target
+}
+
+Merge.parse = function(cmdstr) {
+  if(cmdstr.indexOf('merge ') !== 0) return false
+  var target = cmdstr.substr('merge '.length)
+  return new Merge(target)
+}
+
+Merge.prototype.transformAgainst = function(op) {
+  // We can reuse the selection transformation here
+  var newRange = transformRange(this.target, [op])
+  if (!~newRange.indexOf(':')) return new Merge(null) // if it'S not a range anymore, this will become a noop.
+  return new Merge(newRange)
+}
+
+/**
  * Name operation
  */
 function Name(name, action, val) {
@@ -573,4 +597,56 @@ function resolveRowRange(range) {
   }
   cells.reverse()
   return cells
+}
+
+/**
+ * Transforms a range against an array of ops
+ */
+function transformRange(range, ops) {
+  var rangeComps = range.split(':')
+    , newRange
+  var start = rangeComps[0]
+  ops.forEach(op => start = transformRangeAnchor(start, op, /*isStart:*/true))
+  var end = rangeComps[1]
+  ops.forEach(op => end = transformRangeAnchor(end, op, /*isStart:*/false))
+  if (start === end) return start
+  return start+':'+end
+}
+
+/**
+ * Transforms a range anchor, taking into account whether it's the start or end
+ */
+function transformRangeAnchor(target, op, isStart) {
+  var thisCell = parseCell(target)
+  if (op instanceof InsertCol) {
+    var otherCell = parseCell(op.newCol)
+    if (otherCell[0] <= thisCell[0]) return column.fromInt(thisCell[0]+1)+thisCell[1]
+  }
+  else if (op instanceof DeleteCol) {
+    var otherCell = parseCell(op.col)
+    if (otherCell[0] < thisCell[0]) return column.fromInt(thisCell[0]-1)+thisCell[1]
+    if (otherCell[0] === thisCell[0]) {
+      // Spreadsheet selection is different from text selection:
+      // While text selection ends in the first *not* selected char ( "foo| |bar" => 3,4)
+      // ... spreadsheet selection ends in the last selected cell. Thus we need to
+      // differentiate between start and end. Shame on those who didn't think about this!
+      if (!isStart) return column.fromInt(thisCell[0]-1)+thisCell[1]     }
+  }
+  else if (op instanceof InsertRow) {
+    var otherCell = parseCell(op.newRow)
+    if (otherCell[1] <= thisCell[1]) return column.fromInt(thisCell[0])+(thisCell[1]+1)
+  }
+  else if (op instanceof DeleteRow) {
+    var otherCell = parseCell(op.col)
+    if (otherCell[1] < thisCell[1]) return column.fromInt(thisCell[0])+(thisCell[1]-1)
+    if (otherCell[1] === thisCell[1]) {
+      if (!isStart) return column.fromInt(thisCell[0])+(thisCell[1]-1)
+    }
+  }
+  // If nothing has returned already then this anchor doesn't change
+  return target
+}
+
+exports.compose = function(ops1, ops2) {
+  return ops1.concat(ops2)
 }
