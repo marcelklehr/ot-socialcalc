@@ -21,7 +21,7 @@ Furthermore it allows you to convert a list of socialcalc commands into an opera
   - [x] set cell
   - [x] set cell range
   - [ ] erase/copy/cut/paste/fillright/filldown A1:B5 all/formulas/format
-  - [ ] merge
+  - [x] merge
   - [ ] unmerge
   - [x] insertcol/insertrow
   - [x] deletecol/deleterow C5:E7
