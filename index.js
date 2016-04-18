@@ -39,7 +39,7 @@ exports.transform = function(ops1, ops2, side) {
   })
 }
 
-exports.transformCursor(cursor, ops/*, isOwnOp*/) { // isOwnOp is not supported for now, its purpose eludes me
+exports.transformCursor = function(cursor, ops/*, isOwnOp*/) { // isOwnOp is not supported for now, its purpose eludes me
   var cursorOp
   if (!~cursor.indexOf(':')) {
     cursorOp = new Set(cursor, null, null)
