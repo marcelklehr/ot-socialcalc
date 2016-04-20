@@ -136,7 +136,7 @@ Set.prototype.transformAgainst = function(op2, side) {
   }else if(op2 instanceof InsertRow && this.target !== 'sheet') {
     var otherRow = parseCell(op2.newRow)[1]
     // If this target is a cell
-    if (this.target.match(/[a-z]+[0-9]+/)) {
+    if (this.target.match(/[a-z]+[0-9]+/i)) {
       var myCell = parseCell(this.target)
         , thisRow = myCell[1]
       if (otherRow <= thisRow) return new Set(column.fromInt(myCell[0])+(thisRow+1), this.attribute, this.value)
@@ -154,7 +154,7 @@ Set.prototype.transformAgainst = function(op2, side) {
   if (op2 instanceof DeleteRow && this.target !== 'sheet'){
     var otherRow = parseCell(op2.row)[1]
     // If this target is a cell
-    if (this.target.match(/[a-z]+[0-9]+/)) {
+    if (this.target.match(/[a-z]+[0-9]+/i)) {
       var myCell = parseCell(this.target)
         , thisRow = myCell[1]
       if (otherCol < thisCol) return new Set(column.fromInt(myCell[0])+(thisRow-1), this.attribute, this.value)
@@ -182,7 +182,7 @@ Set.prototype.transformAgainst = function(op2, side) {
   if (op2 instanceof InsertCol && this.target !== 'sheet') {
     var otherCol = parseCell(op2.newCol)[0]
     // If this target is a cell
-    if (this.target.match(/[a-z]+[0-9]+/)) {
+    if (this.target.match(/[a-z]+[0-9]+/i)) {
       var myCell = parseCell(this.target)
         , thisCol = myCell[0]
       if (otherCol <= thisCol) return new Set(column.fromInt(thisCol+1)+myCell[1], this.attribute, this.value)
@@ -200,7 +200,7 @@ Set.prototype.transformAgainst = function(op2, side) {
   if (op2 instanceof DeleteCol && this.target !== 'sheet'){
     var otherCol = parseCell(op2.col)[0]
     // If this target is a cell
-    if (this.target.match(/[a-z]+[0-9]+/)) {
+    if (this.target.match(/[a-z]+[0-9]+/i)) {
       var myCell = parseCell(this.target)
         , thisCol = myCell[0]
       if (otherCol < thisCol) return new Set(column.fromInt(thisCol-1)+myCell[1], this.attribute, this.value)
