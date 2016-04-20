@@ -1,6 +1,6 @@
 {
   "name": "ot-socialcalc",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Operational Transformation for socialcalc commands (shareJS compatible)",
   "main": "index.js",
   "dependencies": {
