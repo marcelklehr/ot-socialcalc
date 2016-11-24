@@ -476,7 +476,7 @@ Merge.prototype.serialize = function() {
 Merge.parse = function(cmdstr) {
   if(cmdstr.indexOf('merge ') !== 0) return false
   var target = cmdstr.substr('merge '.length)
-  return new Merge(target)
+  return [new Merge(target)]
 }
 
 Merge.prototype.transformAgainst = function(op) {
