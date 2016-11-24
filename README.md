@@ -22,7 +22,7 @@ Furthermore it allows you to convert a list of socialcalc commands into an opera
   - [x] set cell range
   - [ ] erase/copy/cut/paste/fillright/filldown A1:B5 all/formulas/format
   - [x] merge
-  - [ ] unmerge
+  - [x] unmerge
   - [x] insertcol/insertrow
   - [x] deletecol/deleterow C5:E7
   - [ ] movepaste/moveinsert A1:B5 A8 all/formulas/format (if insert, destination must be in same rows or columns or else paste done)

@@ -2,7 +2,7 @@ var SocialCalc = require('socialcalc')
   , SpreadsheetColumn = require('spreadsheet-column')
   , column = new SpreadsheetColumn
 
-const operationsList = [Set, InsertRow, DeleteRow, InsertCol, DeleteCol, Name, Merge]
+const operationsList = [Set, InsertRow, DeleteRow, InsertCol, DeleteCol, Name, Merge, Unmerge]
 const operationsHash = operationsList.reduce(function(obj, op) {obj[(new op).type] = op; return obj},{})
 const scInstance = new SocialCalc.SpreadsheetControl()
 
@@ -484,6 +484,35 @@ Merge.prototype.transformAgainst = function(op) {
   var newRange = transformRange(this.target, [op])
   if (!~newRange.indexOf(':')) return new Merge(null) // if it'S not a range anymore, this will become a noop.
   return new Merge(newRange)
+}
+
+/**
+ * Unmerge operation
+ */
+function Unmerge(target) {
+  this.type = 'Unmerge'
+  this.target = target
+}
+
+Unmerge.hydrate = function(op) {
+  return new Merge(op.target)
+}
+
+Unmerge.prototype.serialize = function() {
+  if (!this.target) return ''
+  return 'unmerge '+this.target
+}
+
+Unmerge.parse = function(cmdstr) {
+  if(cmdstr.indexOf('unmerge ') !== 0) return false
+  var target = cmdstr.substr('unmerge '.length)
+  return [new Unmerge(target)]
+}
+
+Unmerge.prototype.transformAgainst = function(op) {
+  // We can reuse the selection transformation here
+  var newRange = transformRange(this.target, [op])
+  return new Unmerge(newRange)
 }
 
 /**
