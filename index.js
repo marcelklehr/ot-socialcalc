@@ -76,7 +76,7 @@ function unpackOps (ops) {
 OPERATIONS
 ----------------------------
 */
-// These are SocialCalcs commands in the original format (we parse and serialize operations from7to this format):
+// These are SocialCalcs commands in the original format (we parse and serialize operations from/to this format):
 //
 //    set sheet attributename value (plus lastcol and lastrow)
 //    set 22 attributename value
@@ -104,7 +104,7 @@ OPERATIONS
 /**
 All Operations implement the same Interface:
 
-Operation#transformAgainst(op, side) : Operation // transforms this op against the passed on in-place. `side` is for tie-breaking.
+Operation#transformAgainst(op, side) : Operation // transforms this op against the passed one and returns the result (will never mutate in-place). `side` is for tie-breaking.
 Operation#serialize() : string // Returns the corresponding SocialCalc command (without newline)
 Operation.parse(cmd:String) : Array<Operation>|false // Checks if the SocialCalc command is equivalent to the Operation type, if so: returns the corresponding operation(s), else it returns false.
 Operation.hydrade(obj) : Operation // turns a plain object into an Operation instance
