@@ -160,8 +160,8 @@ Set.prototype.transformAgainst = function(op2, side) {
       if (otherCol < thisCol) return new Set(column.fromInt(myCell[0])+(thisRow-1), this.attribute, this.value)
       else if (otherRow === thisRow) {
         var obj = new Set(this.target, this.attribute, this.value)
-	obj.hasEffect = false
-	return obj
+        obj.hasEffect = false
+        return obj
       }
       else return this
     }else
@@ -171,8 +171,8 @@ Set.prototype.transformAgainst = function(op2, side) {
       if (otherRow <= thisRow) return new Set(String(thisRow-1), this.attribute, this.value)
       else if (otherCol === thisCol) {
         var obj = new Set(this.target, this.attribute, this.value)
-	obj.hasEffect = false
-	return obj
+        obj.hasEffect = false
+        return obj
       }
       else return this
     }
@@ -206,8 +206,8 @@ Set.prototype.transformAgainst = function(op2, side) {
       if (otherCol < thisCol) return new Set(column.fromInt(thisCol-1)+myCell[1], this.attribute, this.value)
       else if (otherCol === thisCol) {
         var obj = new Set(this.target, this.attribute, this.value)
-	obj.hasEffect = false
-	return obj
+        obj.hasEffect = false
+        return obj
       }
       else return this
     }else
@@ -217,8 +217,8 @@ Set.prototype.transformAgainst = function(op2, side) {
       if (otherCol <= thisCol) return new Set(column.fromInt(thisCol-1), this.attribute, this.value)
       else if (otherCol === thisCol) {
         var obj = new Set(this.target, this.attribute, this.value)
-	obj.hasEffect = false
-	return obj
+        obj.hasEffect = false
+        return obj
       }
       else return this
     }
@@ -525,24 +525,24 @@ Name.prototype.transformAgainst = function(op, left) {
     if ('define' === this.action) {
       if (op.action === 'define' || op.action === 'delete') { // def, def => tie; def, del => tie
         if (left) return this
-	else return new Name(null, this.action, this.value)
+        else return new Name(null, this.action, this.value)
       }
       else return this
     }
     else if ('desc' === this.action) {
       if (op.action === 'desc' || op.action === 'delete') { // desc, desc => tie; desc, del => tie
         if (left) return this
-	else return new Name(null, this.action, this.value)
+        else return new Name(null, this.action, this.value)
       }
       else return this
     }
     else if ('delete' === this.action) {
       if (op.action === 'delete') { // del, del => noop
-	return new Name(null, this.action, this.value)
+        return new Name(null, this.action, this.value)
       }
       else { // del, def => tie; del, desc => tie
         if (left) return this
-	return new Name(null, this.action, this.value)
+        return new Name(null, this.action, this.value)
       }
     }
   }
